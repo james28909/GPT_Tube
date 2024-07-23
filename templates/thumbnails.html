@@ -5,10 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Thumbnails</title>
     <style>
+        @keyframes colorOscillation {
+            0% { color: #ff0000; }
+            20% { color: #ff9900; }
+            40% { color: #ffff00; }
+            60% { color: #33ff00; }
+            80% { color: #00ccff; }
+            100% { color: #ff00ff; }
+        }
+
         body {
-            background-color: #121212;
+            background-color: #202020; /* Lighter dark background for the webpage */
             color: #ffffff;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background-color: #282828; /* Slightly darker background for the header */
+            border-bottom: 2px solid #333;
         }
         .video-popup {
             display: none;
@@ -16,48 +37,66 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border: 1px solid #ccc;
+            border: 1px solid #333;
             padding: 20px;
             background: #ffffff;
             color: #000000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         .thumbnail-container {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            background-color: #181818; /* Darker background for thumbnail container */
+            border-radius: 10px;
+            margin: 20px;
         }
         .thumbnail {
-            flex: 1 1 30%;
-            margin: 5px;
+            flex: 1 1 calc(20% - 20px); /* 5 columns of thumbnails per row */
+            margin: 10px;
             text-align: center;
-            background-color: #1e1e1e;
+            background-color: #1a1a1a; /* Even darker background for thumbnails */
             padding: 10px;
             border-radius: 10px;
             cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .thumbnail:hover {
+            transform: scale(1.05);
+            background-color: #333;
         }
         .thumbnail img {
             width: 100%;
             border-radius: 10px;
+            max-height: 150px;
+            object-fit: cover;
         }
         .thumbnail p {
-            margin-top: 10px;
+            margin-top: 5px; /* Reduce space between image and title */
+            margin-bottom: 5px; /* Reduce space between title and bottom of thumbnail container */
             color: #ffffff;
         }
         .floating-player {
             position: fixed;
             bottom: 10px;
             right: 10px;
-            width: 300px;
-            height: 240px;
-            border: 1px solid #ccc;
+            width: 320px;
+            height: 260px;
+            border: 1px solid #333;
             background: #000;
             display: flex;
             flex-direction: column;
             align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         #video-player {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: contain;
+            border-radius: 10px 10px 0 0;
         }
         .controls {
             display: flex;
@@ -66,20 +105,25 @@
             padding: 5px;
         }
         .control-button {
-            background-color: rgba(51, 51, 51, 0.7);
-            color: #fff;
+            background-color: transparent; /* Transparent background */
+            color: transparent; /* Transparent text */
             border: none;
-            padding: 5px 10px;
+            padding: 10px;
             cursor: pointer;
             flex: 1;
             text-align: center;
+            transition: color 0.45s; /* Slower transition for color oscillation */
         }
         .control-button:hover {
-            background-color: rgba(85, 85, 85, 0.7);
+            color: #ff0000; /* Start with a visible color */
+            animation: colorOscillation 1.35s infinite; /* Slower color oscillation */
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>YouTube Playlist Downloader</h1>
+    </header>
     <div id="thumbnails" class="thumbnail-container">
         {% for video in playlist_videos %}
             <div class="thumbnail" onclick="playVideo({{ loop.index0 }})">
@@ -179,6 +223,9 @@
                     playVideo(index);
                 });
             });
+
+            var videoPlayer = document.getElementById('video-player');
+            videoPlayer.addEventListener('ended', playNextVideo);  // Autoplay next video when current video ends
         });
 
         socket.on('progress', function(data) {
