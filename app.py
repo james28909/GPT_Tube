@@ -15,7 +15,7 @@ playlist_videos = []
 
 @app.route('/')
 def index():
-    return "Welcome to the YouTube Playlist Downloader!"
+    return "Welcome to the YouTube Playlist Viewer!"
 
 @app.route('/playlist/<playlist_id>')
 def get_playlist(playlist_id):
